@@ -113,3 +113,12 @@ level. Running the server non-elevated works for normal applications; windows of
 ## License
 
 MIT - see [LICENSE](LICENSE). Copyright (c) 2026 CSC-Software GmbH.
+
+## Authors
+
+Uwe Chalas & Claude
+
+## Publisher
+
+CSC-Software GmbH · An der Tränke 4 · 34479 Breuna · Germany
+Commercial register HRB 17982, Amtsgericht Kassel · VAT ID DE325434425 · info@csc-software.de · https://www.csc-software.de
