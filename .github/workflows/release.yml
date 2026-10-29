@@ -1,0 +1,36 @@
+name: Release
+
+# Tag vX.Y.Z -> self-contained WinfoMain.MCPServer.exe and its SHA-256 as a GitHub release.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Publish
+        run: dotnet publish MCPServer -c Release -p:PublishProfile=win-x64
+      - name: Checksum
+        shell: pwsh
+        run: |
+          $exe = 'publish/WinfoMain.MCPServer.exe'
+          (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower() + '  WinfoMain.MCPServer.exe' | Out-File "$exe.sha256" -Encoding ascii
+          Get-Content "$exe.sha256"
+      - name: GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release create "${{ github.ref_name }}" publish/WinfoMain.MCPServer.exe publish/WinfoMain.MCPServer.exe.sha256 \
+            --repo "${{ github.repository }}" --title "winfo ${{ github.ref_name }}" \
+            --notes "Self-contained Windows x64 build (no .NET installation needed). Verify with the .sha256 file."
